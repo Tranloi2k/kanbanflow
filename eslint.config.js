@@ -1,39 +1,50 @@
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-import { defineConfig, globalIgnores } from "eslint/config";
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import pluginReact from 'eslint-plugin-react'
+import pluginPrettier from 'eslint-plugin-prettier'
 
-export default defineConfig([
-  globalIgnores(["dist"]),
+export default tseslint.config(
+  { ignores: ['dist'] },
   {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs["recommended-latest"],
-      reactRefresh.configs.vite,
-    ],
+    files: ['**/*.{ts,tsx}'],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     plugins: {
       react: pluginReact,
-      "react-hooks": pluginReactHooks,
-      "react-refresh": pluginReactRefresh,
-      prettier: pluginPrettier, // <-- Thêm plugin prettier
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+      prettier: pluginPrettier,
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
     rules: {
-      // Các rules có sẵn của bạn
       ...pluginReact.configs.recommended.rules,
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-      "react-refresh/only-export-components": "warn",
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
 
       // Thêm rule của prettier
-      "prettier/prettier": "warn", // <-- Bật rule của prettier, hiển thị dưới dạng warning
+      'prettier/prettier': 'warn',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-react': 'off',
     },
-  },
-]);
+  }
+)
