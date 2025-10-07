@@ -1,38 +1,70 @@
 import { LayoutDashboard, Columns3, ChartLine } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const Sidebar = () => {
+  const location = useLocation()
+  const currentPath = location.pathname.split('/').pop() || ''
+
+  const menuItems = [
+    {
+      id: 'backlog',
+      label: 'Backlog',
+      icon: LayoutDashboard,
+      path: '/project/backlog',
+    },
+    {
+      id: 'board',
+      label: 'Board',
+      icon: Columns3,
+      path: '/project/board',
+    },
+    {
+      id: 'report',
+      label: 'Report',
+      icon: ChartLine,
+      path: '/project/report',
+    },
+  ]
+
+  const isActive = (itemId: string) => {
+    // Handle default route case - when at /project/, show backlog as active
+    if (currentPath === 'project' && itemId === 'backlog') return true
+    return currentPath === itemId
+  }
+
+  const getMenuItemClasses = (itemId: string) => {
+    const baseClasses =
+      'flex items-center gap-3 px-4 hover:bg-blue-50 hover:text-blue-500 rounded'
+    const activeClasses = ' !bg-blue-100 !text-blue-500'
+    return baseClasses + (isActive(itemId) ? activeClasses : '')
+  }
+
+  const MenuItem = ({ item }: { item: (typeof menuItems)[0] }) => {
+    const Icon = item.icon
+
+    return (
+      <li key={item.id}>
+        <Link to={item.path} className={getMenuItemClasses(item.id)}>
+          {isActive(item.id) && (
+            <div className="absolute left-[13px] h-[16px] w-[5px] bg-blue-500 my-4" />
+          )}
+          <Icon className="h-[18px] w-[18px]" />
+          <span className="block rounded py-2">{item.label}</span>
+        </Link>
+      </li>
+    )
+  }
+
   return (
     <aside className="hidden md:block h-full w-64 flex-shrink-0 bg-gray-50 border-r-1 border-gray-200 text-gray-600 p-3 shadow-xl shadow-gray-100">
-      <div className="mb-4 text-2xl font-bold ">KanbanFlow</div>
-      <div className="text-md font-medium">Planning</div>
+      <div className="mb-4 text-2xl font-bold ml-4">KanbanFlow</div>
+
+      <div className="text-md font-medium ml-4 mb-2">Planning</div>
       <nav>
         <ul className="font-medium">
-          <li>
-            <div className="flex items-center gap-3 px-4 hover:bg-blue-100 hover:!text-blue-500 rounded">
-              <div className="absolute left-[13px] h-[16px] w-[5px] bg-blue-500 my-4"></div>
-              <LayoutDashboard className="h-[18px] w-[18px]" />
-              <a href="#" className="block rounded py-2 ">
-                Dashboard
-              </a>
-            </div>
-          </li>
-          <li>
-            <div className="flex items-center gap-3 px-4 hover:bg-blue-100 hover:!text-blue-500 rounded">
-              <Columns3 className="h-[18px] w-[18px]" />
-              <Link to="/project/board" className="block rounded py-2">
-                Board
-              </Link>
-            </div>
-          </li>
-          <li>
-            <div className="flex items-center gap-3 px-4 hover:bg-blue-100 hover:!text-blue-500 rounded">
-              <ChartLine className=" h-[18px] w-[18px]" />
-              <Link to="/project/report" className="block rounded py-2">
-                Report
-              </Link>
-            </div>
-          </li>
+          {menuItems.map((item) => (
+            <MenuItem key={item.id} item={item} />
+          ))}
         </ul>
       </nav>
     </aside>
