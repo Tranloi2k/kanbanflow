@@ -1,8 +1,9 @@
 import { LayoutDashboard, Columns3, ChartLine } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 
 const Sidebar = () => {
   const location = useLocation()
+  const { projectId } = useParams<{ projectId: string }>()
   const currentPath = location.pathname.split('/').pop() || ''
 
   const menuItems = [
@@ -10,25 +11,25 @@ const Sidebar = () => {
       id: 'backlog',
       label: 'Backlog',
       icon: LayoutDashboard,
-      path: '/project/backlog',
+      path: `/project/${projectId}/backlog`,
     },
     {
       id: 'board',
       label: 'Board',
       icon: Columns3,
-      path: '/project/board',
+      path: `/project/${projectId}/board`,
     },
     {
       id: 'report',
       label: 'Report',
       icon: ChartLine,
-      path: '/project/report',
+      path: `/project/${projectId}/report`,
     },
   ]
 
   const isActive = (itemId: string) => {
-    // Handle default route case - when at /project/, show backlog as active
-    if (currentPath === 'project' && itemId === 'backlog') return true
+    // Handle default route case - when at /project/:id/, show backlog as active
+    if (currentPath === projectId && itemId === 'backlog') return true
     return currentPath === itemId
   }
 
@@ -57,7 +58,11 @@ const Sidebar = () => {
 
   return (
     <aside className="hidden md:block h-full w-64 flex-shrink-0 bg-gray-50 border-r-1 border-gray-200 text-gray-600 p-3 shadow-xl shadow-gray-100">
-      <div className="mb-4 text-2xl font-bold ml-4">KanbanFlow</div>
+      <div className="mb-4 text-2xl font-bold ml-4">
+        <Link to="/project" className="hover:text-blue-500">
+          KanbanFlow
+        </Link>
+      </div>
 
       <div className="text-md font-medium ml-4 mb-2">Planning</div>
       <nav>
