@@ -17,7 +17,8 @@ import {
   Clock,
 } from 'lucide-react'
 import CreateIssuePopup, { type CreateIssueFormData } from './CreateIssuePopup'
-import { useIssues } from '../../../hooks/useIssues'
+import { useCreateIssue, useIssues } from '../../../hooks/useIssues'
+import type { CreateIssueRequest } from '../../../types/api'
 
 // Types
 interface BacklogItem {
@@ -114,9 +115,8 @@ interface BacklogItem {
 
 export default function BacklogPage() {
   const { projectId } = useParams<{ projectId: string }>()
-  console.log(projectId)
   const { data: issuesList = [], isLoading } = useIssues(projectId)
-
+  const createIssueMutation = useCreateIssue()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterPriority, setFilterPriority] = useState<string>('all')
@@ -227,23 +227,28 @@ export default function BacklogPage() {
     setIsCreatePopupOpen(true)
   }
 
-  const handleCreateIssue = (data: CreateIssueFormData) => {
-    const newItem: BacklogItem = {
-      id: '12',
+  const handleCreateIssue = async (data: CreateIssueFormData) => {
+    const newItem: CreateIssueRequest = {
       title: data.title,
       description: data.description || '',
       priority: data.priority,
-      status: 'todo',
-      assignee: data.assignee || undefined,
-      reporter: data.reporter,
+      assigneeId: data.assigneeId || undefined,
+      reporterId: data.reporterId,
       storyPoints: data.storyPoints,
-      labels: data.labels || [],
+      // labels: data.labels || [],
       dueDate: data.dueDate || undefined,
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
+      // createdAt: new Date().toISOString().split('T')[0],
+      // updatedAt: new Date().toISOString().split('T')[0],
     }
-    console.log('Create issue', newItem)
-    // setBacklogItems([newItem, ...backlogItems])
+    try {
+      await createIssueMutation.mutateAsync({
+        ...newItem,
+        projectId,
+      })
+      setIsCreatePopupOpen(false)
+    } catch (error) {
+      console.error('Error creating issue:', error)
+    }
   }
 
   const uniqueAssignees = Array.from(
@@ -439,9 +444,9 @@ export default function BacklogPage() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
-                        {getStatusIcon(item.status)}
+                        {getStatusIcon(item.status?.name ?? '')}
                         <select
-                          value={item.status}
+                          value={item.status?.id}
                           onChange={(e) =>
                             updateItemStatus(
                               item.id,
@@ -458,9 +463,9 @@ export default function BacklogPage() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
-                        {getPriorityIcon(item.priority)}
+                        {getPriorityIcon(item.priority ?? '')}
                         <span
-                          className={`px-2 py-1 text-xs rounded-full border capitalize ${getPriorityColor(item.priority)}`}
+                          className={`px-2 py-1 text-xs rounded-full border capitalize ${getPriorityColor(item.priority ?? '')}`}
                         >
                           {item.priority}
                         </span>

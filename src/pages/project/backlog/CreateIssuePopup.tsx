@@ -16,8 +16,8 @@ const createIssueSchema = z.object({
     .max(1000, 'Description must be less than 1000 characters')
     .optional(),
   priority: z.enum(['high', 'medium', 'low']),
-  assignee: z.string().optional(),
-  reporter: z.string().min(1, 'Reporter is required'),
+  assigneeId: z.string().optional(),
+  reporterId: z.string().min(1, 'Reporter is required'),
   storyPoints: z
     .number()
     .min(0, 'Story points must be 0 or greater')
@@ -54,7 +54,7 @@ const CreateIssuePopup = ({
       priority: 'medium',
       storyPoints: 0,
       labels: [],
-      reporter: 'Current User',
+      reporterId: 'Current User',
     },
   })
 
@@ -213,9 +213,9 @@ const CreateIssuePopup = ({
                     Assignee
                   </label>
                   <select
-                    {...register('assignee')}
+                    {...register('assigneeId')}
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.assignee ? 'border-red-500' : 'border-gray-300'
+                      errors.assigneeId ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
                     <option value="">Unassigned</option>
@@ -225,9 +225,9 @@ const CreateIssuePopup = ({
                       </option>
                     ))}
                   </select>
-                  {errors.assignee && (
+                  {errors.assigneeId && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors.assignee.message}
+                      {errors.assigneeId.message}
                     </p>
                   )}
                 </div>
@@ -309,7 +309,7 @@ const CreateIssuePopup = ({
                 </label>
                 <input
                   type="text"
-                  {...register('reporter')}
+                  {...register('reporterId')}
                   readOnly
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
                 />

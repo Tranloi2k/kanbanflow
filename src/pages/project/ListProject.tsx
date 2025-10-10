@@ -33,7 +33,7 @@ const ListProject = () => {
     refetch,
   } = useProjects({
     search: searchTerm || undefined,
-    type: filterCategory !== 'all' ? filterCategory.toUpperCase() : undefined,
+    // type: filterCategory !== 'all' ? filterCategory.toUpperCase() : undefined, // Removed to match ProjectQueryParams type
   })
   const createProjectMutation = useCreateProject()
 
@@ -46,7 +46,8 @@ const ListProject = () => {
       project.description?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesCategory =
-      filterCategory === 'all' || project.type.toLowerCase() === filterCategory
+      filterCategory === 'all' ||
+      project.category.toLowerCase() === filterCategory
 
     // TODO: Add starred functionality when API supports it
     const matchesStarred = !showStarredOnly || true
@@ -60,7 +61,7 @@ const ListProject = () => {
         name: data.name,
         description: data.description,
         key: data.key,
-        type: data.category.toUpperCase() as
+        category: data.category.toUpperCase() as
           | 'SOFTWARE'
           | 'BUSINESS'
           | 'MARKETING',
@@ -304,7 +305,7 @@ const ListProject = () => {
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1">
                           <Users className="h-4 w-4" />
-                          <span>{project.members.length}</span>
+                          <span>{project.members?.length ?? 0}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
@@ -320,7 +321,9 @@ const ListProject = () => {
                     <div className="flex items-center justify-between pt-4 border-t">
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
                         <Clock className="h-4 w-4" />
-                        <span>Updated {formatDate(project.updatedAt)}</span>
+                        <span>
+                          Updated {formatDate(project.updatedAt ?? '')}
+                        </span>
                       </div>
                       <Link
                         to={`/project/${project.id}/board`}
@@ -360,13 +363,13 @@ const ListProject = () => {
                     <div className="flex items-center space-x-6 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <Users className="h-4 w-4" />
-                        <span>{project.members.length}</span>
+                        <span>{project.members?.length ?? 0}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
                         <span>0 issues</span>
                       </div>
-                      <span>Updated {formatDate(project.updatedAt)}</span>
+                      <span>Updated {formatDate(project.updatedAt ?? '')}</span>
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => toggleStar(project.id)}

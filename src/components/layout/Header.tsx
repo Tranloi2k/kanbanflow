@@ -42,17 +42,21 @@ const Header = () => {
         >
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
             <span className="text-white text-sm font-medium">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
+              {user?.fullName?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
-          <span className="text-sm font-medium">{user?.name || 'User'}</span>
+          <span className="text-sm font-medium">
+            {user?.fullName || 'User'}
+          </span>
         </button>
 
         {/* Dropdown Menu */}
         {showUserMenu && (
           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-1 z-50">
             <div className="px-3 py-2 border-b">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {user?.fullName}
+              </p>
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
 

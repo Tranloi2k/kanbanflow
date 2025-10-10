@@ -40,6 +40,7 @@ export interface Project {
   isArchived?: boolean
   createdAt?: string
   updatedAt?: string
+  members?: ProjectMember[]
 }
 
 export interface ProjectMember {
